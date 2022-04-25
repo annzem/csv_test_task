@@ -1,10 +1,10 @@
 package org.eagleinvsys.test.converters.impl;
 
+import org.eagleinvsys.test.converters.ConvertibleCollection;
 import org.eagleinvsys.test.converters.StandardConverter;
 
 import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class StandardCsvConverter implements StandardConverter {
 
@@ -22,7 +22,29 @@ public class StandardCsvConverter implements StandardConverter {
      */
     @Override
     public void convert(List<Map<String, String>> collectionToConvert, OutputStream outputStream) {
-        // TODO: implement by using csvConverter
+        ConvertibleCollection convertibleCollection = toConvertibleCollection(collectionToConvert);
+        csvConverter.convert(convertibleCollection, outputStream);
+    }
+
+    private ConvertibleCollection toConvertibleCollection(List<Map<String, String>> collectionToConvert) {
+        SimpleConvertibleCollection convertibleCollection = new SimpleConvertibleCollection();
+        Set<String> headers = new LinkedHashSet<>();
+        for (Map<String, String> map : collectionToConvert) {
+            for (String header : map.keySet()) {
+                headers.add(header);
+            }
+        }
+        convertibleCollection.getHeaders().addAll(headers);
+        for (Map<String, String> map : collectionToConvert) {
+            String record[] = new String[convertibleCollection.getHeaders().size()];
+            int i = 0;
+            for (String header : convertibleCollection.getHeaders()) {
+                record[i] = map.get(header);
+                i++;
+            }
+            convertibleCollection.addRecord(record);
+        }
+        return convertibleCollection;
     }
 
 }
