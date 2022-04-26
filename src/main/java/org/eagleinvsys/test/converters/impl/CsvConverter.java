@@ -32,16 +32,24 @@ public class CsvConverter implements Converter {
      */
     @Override
     public void convert(ConvertibleCollection collectionToConvert, OutputStream outputStream) {
+        if (collectionToConvert == null) {
+            throw new RuntimeException("Collection can't be null");
+        }
+
         try {
             CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(outputStream),
                     csvFormat);
             List<String> headerList = new ArrayList<>();
+
             headerList.addAll(collectionToConvert.getHeaders());
             csvPrinter.printRecord(headerList);
 
             for (ConvertibleMessage record : collectionToConvert.getRecords()) {
                 List<String> elements = new ArrayList<>();
                 for (String header : headerList) {
+                    if (header == null || header.isEmpty()) {
+                        throw new RuntimeException("Headers can't be null or empty");
+                    }
                     String element = record.getElement(header);
                     elements.add(element);
                 }
@@ -49,7 +57,7 @@ public class CsvConverter implements Converter {
             }
             csvPrinter.flush();
         } catch (IOException e) {
-            throw new RuntimeException("error writing to output stream while converting", e);
+            throw new RuntimeException("Error writing to output stream while converting", e);
         }
     }
 

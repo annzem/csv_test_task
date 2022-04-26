@@ -9,7 +9,6 @@ import java.util.List;
 public class SimpleConvertibleCollection implements ConvertibleCollection {
 
     public List<String> headers = new ArrayList<>();
-
     public List<ConvertibleMessage> records = new ArrayList<>();
 
     @Override
